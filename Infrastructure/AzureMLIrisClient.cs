@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace ML.Web.Infrastructure
 {
-    public class AzureMLIrisClient : IAzureMLClient
+    public class AzureMLIrisClient : AzureMLClientBase, IAzureMLClient
     {
         private readonly IOptions<AzureMLIrisOptions> azureOptions;
-        private HttpClient httpClient = null;
+        private readonly  HttpClient httpClient = null;
 
         public AzureMLIrisClient(IOptions<AzureMLIrisOptions> azureOptions)
         {
@@ -25,26 +25,6 @@ namespace ML.Web.Infrastructure
             return await httpClient.PostAsJsonAsync(string.Empty, CreateRequest(data));
         }
 
-        private ScoreRequest CreateRequest(Dictionary<string, string> data)
-        {
-            var inputsDictionary = new Dictionary<string, List<Dictionary<string, string>>>
-            {
-                {"input1", new List<Dictionary<string, string>>() {data}}
-            };
-
-            return new ScoreRequest()
-            {
-                Inputs = inputsDictionary
-            };
-        }
-
-        private void InitializeClient()
-        {
-            var handler = new HttpClientHandler();
-            handler.AutomaticDecompression = System.Net.DecompressionMethods.None;
-            httpClient = new HttpClient(handler);
-            httpClient.BaseAddress = new Uri(azureOptions.Value.ApiKey);            
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", azureOptions.Value.ApiKey);
-        }
+        
     }
 }
